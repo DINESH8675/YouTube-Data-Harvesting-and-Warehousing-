@@ -467,25 +467,34 @@ def question10():
 
 
 
-
-
-
 try:
     channel_id=st.text_input("enter the channel id")
-    st.subheader(":blue[Retrieving data to store datalake and Migrating the data to  SQL Warehouse]:")
-    option=st.selectbox(':violet[option]:',('selectone','Youtube data scraping and Data store to mongodb','Migrated to SQL Warehousing'))
-    if  option =='Youtube data scraping and Data store to mongodb':
-         channel_Details()
+    st.subheader(":blue[Click below button Retrieving data from youtube and  store to mongodb]:")
+    client = pymongo.MongoClient("mongodb+srv://r_dineshkumar:rdineshkumar@cluster0.e1g0htd.mongodb.net/?retryWrites=true&w=majority")
+    db=client["youtubeProject"]
+    col1=db["channels"]
+    cha_ids =[]
+    for i in col1.find({},{'_id':0,'channel_id':1}):
+       cha_ids.append(i["channel_id"])
+    try:
+      if channel_id in cha_ids:
+          st.write(":red[channel data already exists]")
+      else:
+            st.button(":rainbow[data scraping and store to mongodb]:")
+            channel_Details()
+            st.success("succesfully stotred in mongodb")
+    except:
+       pass      
+except KeyError:
+   pass
 
-    elif option=='Migrated to SQL Warehousing':
+st.subheader(':blue[Click the below button to migrate the data to sql tables.]') 
+if st.button(":rainbow[Migrate to SQL]:"):
         create_channel_table()
         create_playlist_table()
         create_videos_table()
         create_comments_table()
         st.success("succesfully migrated to sql warehouse")
-except KeyError:
-   pass
-
 st.subheader(":red[Details In Dataframe]: ")
 select=st.selectbox(":orange[select one to explore the details in dataframe format]:",("select anyone","1.channel_dataframe",
                    "2.playlist_dataframe","3.video_dataframe","4.comment_dataframe" ))                                                                  
